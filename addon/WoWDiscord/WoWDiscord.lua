@@ -109,6 +109,23 @@ SlashCmdList.WOWDISCORD = function(arg)
   end
 end
 
+-- /screen : a normal screenshot (JPEG, posted in #wow), like the Print Screen key.
+-- Taken 0.5 s later, once the chat box is closed.
+local screenTimer = CreateFrame("Frame")
+screenTimer:Hide()
+screenTimer:SetScript("OnUpdate", function(self, elapsed)
+  self.t = self.t + elapsed
+  if self.t >= 0.5 then
+    self:Hide()
+    Screenshot()
+  end
+end)
+SLASH_WOWDISCORDSCREEN1 = "/screen"
+SlashCmdList.WOWDISCORDSCREEN = function()
+  screenTimer.t = 0
+  screenTimer:Show()
+end
+
 f:RegisterEvent("PLAYER_LOGIN")
 f:RegisterEvent("PLAYER_LEVEL_UP")
 f:RegisterEvent("QUEST_COMPLETE")

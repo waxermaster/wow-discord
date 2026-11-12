@@ -1,6 +1,6 @@
 ## Interface: 16001
 ## Title: WoW Discord
 ## Notes: Note les level up, quêtes et métiers pour le bot Discord du groupe.
-## Version: 1.0
+## Version: 1.1
 ## SavedVariables: WoWDiscordDB
 WoWDiscord.lua
