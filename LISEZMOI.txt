@@ -1,0 +1,4 @@
+INSTALLATION (WoW ferme)
+
+Windows : double-clic sur windows\INSTALLER.bat
+Linux   : bash linux/install.sh

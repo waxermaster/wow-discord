@@ -1,0 +1,7 @@
+# Only the addon and the players' scripts are published. Never the webhook, the bot or the guides.
+webhook.txt
+bot/
+logo/
+GUIDE-BOT.txt
+MESSAGE-DISCORD.txt
+PROMPT-HERMES*.txt
