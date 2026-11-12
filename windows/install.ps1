@@ -59,7 +59,7 @@ while (-not $wowDir) {
 Write-Host "WoW trouve : $wowDir"
 
 New-Item -ItemType Directory -Force $dest | Out-Null
-Copy-Item (Join-Path $PSScriptRoot 'wow-discord.ps1') $dest -Force
+Copy-Item (Join-Path $PSScriptRoot 'wow-discord.ps1'), (Join-Path $PSScriptRoot 'gerer.ps1') $dest -Force
 Copy-Item (Join-Path $PSScriptRoot '..\VERSION') $dest -Force
 # Plain data file (read with ConvertFrom-Json, never executed).
 @{ Webhook = $webhook; WowDir = $wowDir } | ConvertTo-Json | Set-Content -Encoding UTF8 $configFile
@@ -87,6 +87,11 @@ $lnk.TargetPath = 'powershell.exe'
 $lnk.Arguments = "$runArgs -Update"
 $lnk.WindowStyle = 7
 $lnk.Save()
+# "Gerer" in the Start menu: start, stop or uninstall (in a visible window, it asks a question).
+$lnk = (New-Object -ComObject WScript.Shell).CreateShortcut((Join-Path ([Environment]::GetFolderPath('Programs')) 'WoW Discord - Gerer.lnk'))
+$lnk.TargetPath = 'powershell.exe'
+$lnk.Arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$dest\gerer.ps1`""
+$lnk.Save()
 Start-Process powershell.exe -ArgumentList $runArgs -WindowStyle Hidden
 
 if ($Update) {
@@ -99,5 +104,5 @@ if ($Update) {
 Write-Host 'Installe. Il demarre avec le PC. Tes level up, quetes et metiers partent sur Discord'
 Write-Host 'quand tu te deconnectes, fais /reload ou quittes WoW (tous tes personnages).'
 Write-Host 'Mises a jour : une fenetre te les proposera (ou menu Demarrer : WoW Discord - Chercher une mise a jour).'
-Write-Host 'Desinstaller : supprimer wow-discord dans le dossier Demarrage (Win+R, shell:startup).'
+Write-Host 'Demarrer, arreter ou desinstaller : menu Demarrer, WoW Discord - Gerer (ou GERER.bat).'
 Read-Host 'Entree pour fermer'

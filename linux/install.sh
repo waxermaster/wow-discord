@@ -27,6 +27,7 @@ done
 
 mkdir -p ~/.local/bin ~/.config/systemd/user
 install -m 755 "$here/wow-discord.sh" ~/.local/bin/wow-discord.sh
+install -m 755 "$here/gerer.sh" ~/.local/bin/wow-discord-gerer.sh
 printf 'WEBHOOK=%s\nWOWDIR=%s\n' "$webhook" "$wowdir" > "$conf"   # plain data, never executed
 chmod 600 "$conf"
 mkdir -p ~/.local/state/wow-discord
@@ -41,6 +42,15 @@ Name=WoW Discord - Chercher une mise à jour
 Exec=$HOME/.local/bin/wow-discord.sh --update
 Icon=system-software-update
 Terminal=false
+DESKTOP
+# "Gérer" in the applications menu: start, stop or uninstall.
+cat > ~/.local/share/applications/wow-discord-gerer.desktop <<DESKTOP
+[Desktop Entry]
+Type=Application
+Name=WoW Discord - Démarrer / Arrêter / Désinstaller
+Exec=$HOME/.local/bin/wow-discord-gerer.sh
+Icon=preferences-system
+Terminal=true
 DESKTOP
 
 mkdir -p "$wowdir/Interface/AddOns"
@@ -70,4 +80,5 @@ systemctl --user restart wow-discord.service
 echo "Installé. Il démarre avec le PC. Tes level up, quêtes et métiers partent sur Discord"
 echo "quand tu te déconnectes, fais /reload ou quittes WoW (tous tes personnages)."
 echo "Mises à jour : une fenêtre te les proposera (ou menu : WoW Discord - Chercher une mise à jour)."
-echo "Désinstaller : systemctl --user disable --now wow-discord.service"
+echo "Démarrer, arrêter ou désinstaller : menu « WoW Discord - Démarrer / Arrêter / Désinstaller »"
+echo "ou bash wow-discord/linux/gerer.sh"
