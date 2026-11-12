@@ -119,9 +119,25 @@ function Check($file, $account) {
   $true
 }
 
+# "wow|online" when WoW starts, "wow|offline|<seconds played>" when it closes.
+# .playing holds the start time; its date is the last time WoW was seen running,
+# so a PC turned off during a game does not count the hours it stayed off.
+function Presence {
+  $file = Join-Path $state '.playing'
+  if (Get-Process Wow -ErrorAction SilentlyContinue) {
+    if (Test-Path $file) { (Get-Item $file).LastWriteTime = Get-Date; return }
+    if (Send "wow|online|$(Acct (LastAccount))") { Set-Content $file ([DateTimeOffset]::Now.ToUnixTimeSeconds()) }
+  } elseif (Test-Path $file) {
+    $start = [long](Get-Content $file -TotalCount 1)
+    $last = ([DateTimeOffset](Get-Item $file).LastWriteTime).ToUnixTimeSeconds()
+    if (Send "wow|offline|$(Acct (LastAccount))|$([math]::Max(0, $last - $start))") { Remove-Item $file }
+  }
+}
+
 $tick = 0
 while ($true) {
   Shots
+  Presence
   if ($tick % 720 -eq 0) { Update 'auto' }   # about once an hour
   if ($tick++ % 12) { Start-Sleep -Seconds 5; continue }
   Get-ChildItem (Join-Path $WowDir 'WTF\Account\*\SavedVariables\WoWDiscord.lua') -ErrorAction SilentlyContinue | ForEach-Object {

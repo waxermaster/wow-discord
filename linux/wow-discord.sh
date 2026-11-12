@@ -104,9 +104,23 @@ check() {
   done < <(lines "$file")
 }
 
+# "wow|online" when WoW starts, "wow|offline|<seconds played>" when it closes.
+# .playing holds the start time; its date is the last time WoW was seen running,
+# so a PC turned off during a game does not count the hours it stayed off.
+presence() {
+  local file=$STATE/.playing
+  if pgrep -f 'Wow\.exe' >/dev/null; then
+    if [[ -f $file ]]; then touch "$file"; return; fi
+    send "wow|online|$(acct "$(last_account)")" && date +%s > "$file"
+  elif [[ -f $file ]]; then
+    send "wow|offline|$(acct "$(last_account)")|$(( $(stat -c %Y "$file") - $(cat "$file") ))" && rm -f "$file"
+  fi
+}
+
 tick=0
 while true; do
   shots
+  presence
   (( tick % 720 )) || update auto   # about once an hour
   (( tick++ % 12 )) && { sleep 5; continue; }
   for file in "$WOWDIR"/WTF/Account/*/SavedVariables/WoWDiscord.lua; do

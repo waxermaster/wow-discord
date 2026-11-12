@@ -1,4 +1,4 @@
--- Records level ups, turned-in quests and a character sheet (class, level,
+-- Records level ups, turned-in quests, deaths and a character sheet (class, level,
 -- professions) as ready-made "wow|..." lines in WoWDiscordDB. WoW writes that
 -- file on logout, /reload and exit; the wow-discord script then posts the new
 -- lines to the group's #wow-log webhook. Works with any client language.
@@ -131,6 +131,7 @@ f:RegisterEvent("PLAYER_LEVEL_UP")
 f:RegisterEvent("QUEST_COMPLETE")
 f:RegisterEvent("QUEST_TURNED_IN")
 f:RegisterEvent("PLAYER_LOGOUT")
+f:RegisterEvent("PLAYER_DEAD")
 f:SetScript("OnEvent", function(_, event, arg1)
   if event == "PLAYER_LOGIN" then
     WoWDiscordDB = WoWDiscordDB or {}
@@ -158,6 +159,8 @@ f:SetScript("OnEvent", function(_, event, arg1)
     level = arg1
     add(("wow|levelup|%s|%d"):format(me, arg1))
     levelUpShot(arg1)
+  elseif event == "PLAYER_DEAD" then
+    add(("wow|death|%s"):format(me))
   elseif event == "QUEST_COMPLETE" then
     questTitle = GetTitleText()
   elseif event == "QUEST_TURNED_IN" then
